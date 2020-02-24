@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomeState extends State<HomePage> {
   Future<List> _getPromotion() async {
     var _token = manageToken();
-    var _bearerToken = await _token.read();
+    var _bearerToken = await _token.readToken();
 //  print(_bearerToken);
     http.Response response = await http.get(
         "http://192.168.163.2:3000/app/getAllPromotion",
@@ -103,54 +103,186 @@ class _HomeState extends State<HomePage> {
   }
 
   Widget build(BuildContext context) {
+    Widget _threeItemPopup() => PopupMenuButton<int>(
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 1,
+              child: Text("Profile"),
+            ),
+            PopupMenuItem(
+              value: 2,
+              child: Text("Booking"),
+            ),
+            PopupMenuItem(
+              value: 3,
+              child: Text("History"),
+            ),
+            PopupMenuItem(
+              value: 4,
+              child: Text("Log out"),
+            ),
+          ],
+          icon: Icon(
+            Icons.list,
+            size: 35,
+          ),
+          onSelected: (value) {
+            if (value == 1) {
+              Navigator.pushNamed(context, '/profile');
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        );
+
     return Scaffold(
-      body: Stack(
+        body: SingleChildScrollView(
+      child: Stack(
         children: <Widget>[
           Column(
             children: <Widget>[
               Container(
                 height: (MediaQuery.of(context).size.height / 2),
                 color: Colors.white,
-              ),
-              Container(
-                height: (MediaQuery.of(context).size.height / 2),
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                      Colors.white,
-                      Colors.purpleAccent[100],
-                      Colors.indigo
-                    ])),
-                child: Center(
+                child: Align(
+                  alignment: Alignment.topRight,
                   child: Column(
                     children: <Widget>[
                       Container(
-                        width: 70.0,
-                        height: 70.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.deepPurple,
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(2),
-                          child: Icon(
-                            Icons.person_outline,
-                            size: 50,
-                            color: Colors.purple[200],
-                          ),
-                        ),
-                      ),
-
+                        margin: EdgeInsets.only(top: 5.0, right: 5.0),
+                        child: _threeItemPopup(),
+                      )
                     ],
                   ),
                 ),
               ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    width: (MediaQuery.of(context).size.width / 2),
+                    height: (MediaQuery.of(context).size.height / 2),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                          Colors.white,
+                          Colors.purpleAccent[100],
+                          Colors.indigo
+                        ])),
+                    child: Column(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            margin: EdgeInsets.only(right: 30),
+                            width: 60.0,
+                            height: 60.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color.fromRGBO(63, 37, 78, 1),
+                            ),
+                            child: Padding(
+                                padding: EdgeInsets.all(2),
+                                child: SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.purple[100],
+                                    ))),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            margin: EdgeInsets.only(right: 56),
+                            height: 55.0,
+                            width: 8.0,
+                            color: Color.fromRGBO(63, 37, 78, 1),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            margin: EdgeInsets.only(right: 30),
+                            width: 60.0,
+                            height: 60.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color.fromRGBO(63, 37, 78, 1),
+                            ),
+                            child: Padding(
+                                padding: EdgeInsets.all(2),
+                                child: SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child: Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.purple[100],
+                                    ))),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            margin: EdgeInsets.only(right: 56),
+                            height: 55.0,
+                            width: 8.0,
+                            color: Color.fromRGBO(63, 37, 78, 1),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            margin: EdgeInsets.only(right: 30),
+                            width: 60.0,
+                            height: 60.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color.fromRGBO(63, 37, 78, 1),
+                            ),
+                            child: Padding(
+                                padding: EdgeInsets.all(2),
+                                child: SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child: Icon(
+                                      Icons.timer,
+                                      color: Colors.purple[100],
+                                    ))),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: (MediaQuery.of(context).size.width / 2),
+                    height: (MediaQuery.of(context).size.height / 2),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                          Colors.white,
+                          Colors.purpleAccent[100],
+                          Colors.indigo
+                        ])),
+                    child: Column(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text('xxxxxxxxxx'),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         ],
       ),
-    );
+    ));
   }
 }

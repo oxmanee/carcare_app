@@ -216,8 +216,8 @@ class _LoginState extends State<LoginPage> {
                     var password = _passwordController.text;
 
                     if (username == '' || password == '') {
-                      await _showDialog(
-                          'Valid inpuut!', 'Please enter your username and password.');
+                      await _showDialog('Valid inpuut!',
+                          'Please enter your username and password.');
                       return false;
                     }
 
@@ -228,9 +228,14 @@ class _LoginState extends State<LoginPage> {
                           'Login Fail!', 'Username or password is incorrect.');
                       return false;
                     } else {
-                      print('hellow');
-                      var genToken = await manageToken();
-                      await genToken.save(login.token);
+                      var genUser = await manageToken();
+                      await genUser.save(
+                          login.username,
+                          login.fname,
+                          login.lname,
+                          login.address,
+                          login.tel,
+                          login.token);
                       Navigator.pushNamed(context, '/home');
                       return true;
                     }
