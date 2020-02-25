@@ -105,7 +105,11 @@ class _LoginState extends State<LoginPage> {
 
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(top: 50, left: 40, right: 40),
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).size.width / 6,
+            left: 40,
+            right: 40,
+            bottom: MediaQuery.of(context).size.width / 6),
         child: ListView(
           children: <Widget>[
             SizedBox(
@@ -139,14 +143,15 @@ class _LoginState extends State<LoginPage> {
               keyboardType: TextInputType.text,
               controller: _usernameController,
               decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: "Username",
                 labelStyle: TextStyle(
-                  color: Colors.black38,
+                  color: Colors.purple,
                   fontWeight: FontWeight.w400,
                   fontSize: 20,
                 ),
               ),
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, color: Colors.deepPurple),
             ),
             SizedBox(
               height: 30,
@@ -157,14 +162,15 @@ class _LoginState extends State<LoginPage> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: "Password",
                 labelStyle: TextStyle(
-                  color: Colors.black38,
+                  color: Colors.purple,
                   fontWeight: FontWeight.w400,
                   fontSize: 20,
                 ),
               ),
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, color: Colors.deepPurple),
             ),
             Container(
               height: 40,
@@ -173,7 +179,7 @@ class _LoginState extends State<LoginPage> {
                 child: Text(
                   "Forgot password",
                   textAlign: TextAlign.right,
-                  style: TextStyle(color: Color.fromRGBO(30, 144, 255, 10)),
+                  style: TextStyle(color: Colors.indigo),
                 ),
                 onPressed: () {},
               ),
@@ -189,14 +195,13 @@ class _LoginState extends State<LoginPage> {
                   end: Alignment.bottomRight,
                   stops: [0.3, 1],
                   colors: [
-                    Color.fromRGBO(30, 144, 255, 10),
-                    Color.fromRGBO(30, 144, 255, 10),
+                    Colors.deepPurple,
+                    Colors.purpleAccent,
                   ],
                 ),
               ),
               child: SizedBox.expand(
-                child: RaisedButton(
-                  color: Colors.blue,
+                child: FlatButton(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -229,13 +234,8 @@ class _LoginState extends State<LoginPage> {
                       return false;
                     } else {
                       var genUser = await manageToken();
-                      await genUser.save(
-                          login.username,
-                          login.fname,
-                          login.lname,
-                          login.address,
-                          login.tel,
-                          login.token);
+                      await genUser.save(login.id, login.username, login.fname,
+                          login.lname, login.address, login.tel, login.token);
                       Navigator.pushNamed(context, '/home');
                       return true;
                     }
@@ -250,13 +250,10 @@ class _LoginState extends State<LoginPage> {
               height: 60,
               alignment: Alignment.centerLeft,
               decoration: BoxDecoration(
-                border: Border.all(color: Color.fromRGBO(30, 144, 255, 10)),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5),
-                ),
+                border: Border.all(color: Colors.indigo),
               ),
               child: SizedBox.expand(
-                child: RaisedButton(
+                child: FlatButton(
                   color: Colors.white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +262,7 @@ class _LoginState extends State<LoginPage> {
                         "Register",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color.fromRGBO(30, 144, 255, 10),
+                          color: Colors.indigo,
                           fontSize: 20,
                         ),
                         textAlign: TextAlign.left,

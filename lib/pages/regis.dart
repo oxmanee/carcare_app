@@ -57,52 +57,105 @@ class _RegigState extends State<RegisPage> {
   TextEditingController _addressController = TextEditingController();
   TextEditingController _telController = TextEditingController();
 
-  var _add = 0;
+  List<Widget> _addList = List<Widget>();
 
   Widget build(BuildContext context) {
-    List<Widget> _addList = List<Widget>();
-
-    for (var i = 0; i < _add; i++) {
-      _addList.add(Row(
-        key: Key("index_$i"),
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(right: 15),
-            width: MediaQuery.of(context).size.width / 5,
-            child: TextFormField(
-                decoration: InputDecoration(
-              labelText: "Car",
-            )),
-          ),
-          Container(
-            margin: EdgeInsets.only(right: 15),
-            width: MediaQuery.of(context).size.width / 5,
-            child: TextFormField(
-                decoration: InputDecoration(
-              labelText: "Car code",
-            )),
-          ),
-          Container(
-            margin: EdgeInsets.only(right: 15),
-            width: MediaQuery.of(context).size.width / 5,
-            child: TextFormField(
-                decoration: InputDecoration(
-              labelText: "Province",
-            )),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _add -= 1;
-              });
-            },
-            child: Container(
-              child: Icon(Icons.remove),
+    void addCar() {
+      setState(() {
+        int i = _addList.length; // start 0
+        //  print(i);
+        _addList.add(Row(
+          key: Key("index_$i"),
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(right: 15),
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextFormField(
+                  decoration: InputDecoration(
+                labelText: "Car",
+              )),
             ),
-          ),
-        ],
-      ));
+            Container(
+              margin: EdgeInsets.only(right: 15),
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextFormField(
+                  decoration: InputDecoration(
+                labelText: "Car code",
+              )),
+            ),
+            Container(
+              margin: EdgeInsets.only(right: 15),
+              width: MediaQuery.of(context).size.width / 5,
+              child: TextFormField(
+                  decoration: InputDecoration(
+                labelText: "Province",
+              )),
+            ),
+            Container(
+              child: InkWell(
+                  onTap: () {
+                    print(_addList);
+                    print('----------------');
+                    setState(() {
+//                      print("$i");
+                      this._addList.removeWhere(
+                          (contact) => contact.key == Key("index_$i"));
+//                      List<Widget> newList = new List<Widget>();
+//                      for (int k = 0; k < _addList.length; k++) {
+////                        print("index => $k");
+//                        newList.add(_addList[k]);
+//                      }
+//                      _addList = newList;
+                    });
+                    print(_addList);
+                  },
+                  child: Icon(Icons.remove)),
+            ),
+          ],
+        ));
+      });
     }
+
+//    for (var i = 0; i < _add; i++) {
+//      _addList.add(Row(
+//        children: <Widget>[
+//          Container(
+//            margin: EdgeInsets.only(right: 15),
+//            width: MediaQuery.of(context).size.width / 5,
+//            child: TextFormField(
+//                decoration: InputDecoration(
+//              labelText: "Car",
+//            )),
+//          ),
+//          Container(
+//            margin: EdgeInsets.only(right: 15),
+//            width: MediaQuery.of(context).size.width / 5,
+//            child: TextFormField(
+//                decoration: InputDecoration(
+//              labelText: "Car code",
+//            )),
+//          ),
+//          Container(
+//            margin: EdgeInsets.only(right: 15),
+//            width: MediaQuery.of(context).size.width / 5,
+//            child: TextFormField(
+//                decoration: InputDecoration(
+//              labelText: "Province",
+//            )),
+//          ),
+//          GestureDetector(
+//            onTap: () {
+//              setState(() {
+//                _addList.removeAt(i);
+//              });
+//            },
+//            child: Container(
+//              child: Icon(Icons.remove),
+//            ),
+//          ),
+//        ],
+//      ));
+//    }
 
     void _showDialog(title, valid) {
       // flutter defined function
@@ -257,9 +310,7 @@ class _RegigState extends State<RegisPage> {
                         style: TextStyle(color: Colors.purple),
                       ),
                       onPressed: () {
-                        setState(() {
-                          _add += 1;
-                        });
+                        addCar();
                       }, //callback when button is clicked
                       borderSide: BorderSide(
                         color: Colors.deepPurpleAccent, //Color of the border

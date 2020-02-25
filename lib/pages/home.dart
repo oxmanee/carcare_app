@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:booking_carcare_app/helpers/manageToken.dart';
+import 'package:booking_carcare_app/pages/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -102,187 +103,125 @@ class _HomeState extends State<HomePage> {
     });
   }
 
-  Widget build(BuildContext context) {
-    Widget _threeItemPopup() => PopupMenuButton<int>(
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 1,
-              child: Text("Profile"),
-            ),
-            PopupMenuItem(
-              value: 2,
-              child: Text("Booking"),
-            ),
-            PopupMenuItem(
-              value: 3,
-              child: Text("History"),
-            ),
-            PopupMenuItem(
-              value: 4,
-              child: Text("Log out"),
-            ),
-          ],
-          icon: Icon(
-            Icons.list,
-            size: 35,
-          ),
-          onSelected: (value) {
-            if (value == 1) {
-              Navigator.pushNamed(context, '/profile');
-            } else {
-              Navigator.pop(context);
-            }
-          },
-        );
+  List<String> litems = ["1", "2", "Third", "4", "5", "asdlkas", "asdpoaskjd"];
 
+  Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Stack(
-        children: <Widget>[
-          Column(
+        appBar: AppBar(
+          title: Text('Home'),
+          backgroundColor: Colors.deepPurple,
+        ),
+        drawer: Drawer(
+          child: ExpansionTile(
+            initiallyExpanded: true,
+            title: UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Colors.deepPurple),
+              accountName: Text("Mohamed Ali"),
+              accountEmail: Text("mohamed.ali6996@hotmail.com"),
+              currentAccountPicture: CircleAvatar(
+                child: Text("M"),
+                backgroundColor: Colors.white,
+              ),
+            ),
             children: <Widget>[
-              Container(
-                height: (MediaQuery.of(context).size.height / 2),
-                color: Colors.white,
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(top: 5.0, right: 5.0),
-                        child: _threeItemPopup(),
-                      )
-                    ],
+              Padding(
+                padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                child: InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: ListTile(
+                    title: Text("Home Page"),
+                    leading: Icon(
+                      Icons.home,
+                      color: Colors.deepPurpleAccent,
+                    ),
                   ),
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: (MediaQuery.of(context).size.width / 2),
-                    height: (MediaQuery.of(context).size.height / 2),
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                          Colors.white,
-                          Colors.purpleAccent[100],
-                          Colors.indigo
-                        ])),
-                    child: Column(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                            margin: EdgeInsets.only(right: 30),
-                            width: 60.0,
-                            height: 60.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color.fromRGBO(63, 37, 78, 1),
-                            ),
-                            child: Padding(
-                                padding: EdgeInsets.all(2),
-                                child: SizedBox(
-                                    width: 15,
-                                    height: 15,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.purple[100],
-                                    ))),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                            margin: EdgeInsets.only(right: 56),
-                            height: 55.0,
-                            width: 8.0,
-                            color: Color.fromRGBO(63, 37, 78, 1),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                            margin: EdgeInsets.only(right: 30),
-                            width: 60.0,
-                            height: 60.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color.fromRGBO(63, 37, 78, 1),
-                            ),
-                            child: Padding(
-                                padding: EdgeInsets.all(2),
-                                child: SizedBox(
-                                    width: 15,
-                                    height: 15,
-                                    child: Icon(
-                                      Icons.calendar_today,
-                                      color: Colors.purple[100],
-                                    ))),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                            margin: EdgeInsets.only(right: 56),
-                            height: 55.0,
-                            width: 8.0,
-                            color: Color.fromRGBO(63, 37, 78, 1),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                            margin: EdgeInsets.only(right: 30),
-                            width: 60.0,
-                            height: 60.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color.fromRGBO(63, 37, 78, 1),
-                            ),
-                            child: Padding(
-                                padding: EdgeInsets.all(2),
-                                child: SizedBox(
-                                    width: 15,
-                                    height: 15,
-                                    child: Icon(
-                                      Icons.timer,
-                                      color: Colors.purple[100],
-                                    ))),
-                          ),
-                        ),
-                      ],
+              Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/profile'),
+                  child: ListTile(
+                    title: Text("Profile Page"),
+                    leading: Icon(
+                      Icons.person_outline,
+                      color: Colors.deepPurpleAccent,
                     ),
                   ),
-                  Container(
-                    width: (MediaQuery.of(context).size.width / 2),
-                    height: (MediaQuery.of(context).size.height / 2),
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                          Colors.white,
-                          Colors.purpleAccent[100],
-                          Colors.indigo
-                        ])),
-                    child: Column(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Text('xxxxxxxxxx'),
-                        )
-                      ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: InkWell(
+                  onTap: () => debugPrint("home Page"),
+                  child: ListTile(
+                    title: Text("Booking Page"),
+                    leading: Icon(
+                      Icons.book,
+                      color: Colors.deepPurpleAccent,
                     ),
-                  )
-                ],
-              )
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: InkWell(
+                  onTap: () => debugPrint("home Page"),
+                  child: ListTile(
+                    title: Text("History Page"),
+                    leading: Icon(
+                      Icons.history,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 30, right: 30),
+                width: MediaQuery.of(context).size.width,
+                color: Colors.black,
+                height: 0.3,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: InkWell(
+                  child: ListTile(
+                      title: Text("Log out"),
+                      leading: Icon(
+                        Icons.assignment_return,
+                        color: Colors.deepPurpleAccent,
+                      ),
+                      onTap: () async {
+                        var manageData = manageToken();
+                        await manageData.clearData();
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                      }),
+                ),
+              ),
             ],
           ),
-        ],
-      ),
-    ));
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            color: Color.fromRGBO(251, 245, 255, 1),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: litems.length > 0
+                ? ListView.builder(
+                    itemCount: litems.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.00),
+                            child: Text(litems[index].toString()),
+                        ),
+                      );
+                    })
+                : Center(
+                    child: Text('No data'),
+                  ),
+          ),
+        ));
   }
 }

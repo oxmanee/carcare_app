@@ -90,33 +90,78 @@ class _ProfileState extends State<ProfilePage> {
     );
 
     Widget editUser = TextFormField(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Username",
+        labelStyle: TextStyle(
+          color: Colors.black38,
+          fontWeight: FontWeight.w400,
+          fontSize: 20,
+        ),
+      ),
       keyboardType: TextInputType.text,
       controller: _usernameController,
-      style: TextStyle(fontSize: 18, color: Colors.black),
+      style: TextStyle(fontSize: 18, color: Colors.purple),
     );
 
     Widget editFname = TextFormField(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Name",
+        labelStyle: TextStyle(
+          color: Colors.black38,
+          fontWeight: FontWeight.w400,
+          fontSize: 20,
+        ),
+      ),
       keyboardType: TextInputType.text,
       controller: _fnameController,
-      style: TextStyle(fontSize: 18, color: Colors.black),
+      style: TextStyle(fontSize: 18, color: Colors.purple),
     );
 
     Widget editLname = TextFormField(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Surname",
+        labelStyle: TextStyle(
+          color: Colors.black38,
+          fontWeight: FontWeight.w400,
+          fontSize: 20,
+        ),
+      ),
       keyboardType: TextInputType.text,
       controller: _lnameController,
-      style: TextStyle(fontSize: 18, color: Colors.black),
+      style: TextStyle(fontSize: 18, color: Colors.purple),
     );
 
     Widget editTel = TextFormField(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Telphone",
+        labelStyle: TextStyle(
+          color: Colors.black38,
+          fontWeight: FontWeight.w400,
+          fontSize: 20,
+        ),
+      ),
       keyboardType: TextInputType.text,
       controller: _telController,
-      style: TextStyle(fontSize: 18, color: Colors.black),
+      style: TextStyle(fontSize: 18, color: Colors.purple),
     );
 
     Widget editAddress = TextFormField(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Address",
+        labelStyle: TextStyle(
+          color: Colors.black38,
+          fontWeight: FontWeight.w400,
+          fontSize: 20,
+        ),
+      ),
       keyboardType: TextInputType.text,
       controller: _addressController,
-      style: TextStyle(fontSize: 18, color: Colors.black),
+      style: TextStyle(fontSize: 18, color: Colors.purple),
     );
 
     Widget editBtn = FlatButton(
@@ -142,7 +187,7 @@ class _ProfileState extends State<ProfilePage> {
           'Save',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
-        color: Color.fromRGBO(206, 118, 160, 1));
+        color: Colors.indigo);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -223,74 +268,85 @@ class _ProfileState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width / 5, top: 30),
-                    child: Text(
-                      'Username',
-                      style: TextStyle(
-                          fontSize: 22,
-                          color: Color.fromRGBO(133, 133, 133, 1)),
-                    ),
-                  ),
+                  chk == 1
+                      ? Container(
+                          margin: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width / 5,
+                              top: 30),
+                          child: Text(
+                            'Username',
+                            style: TextStyle(
+                                fontSize: 22,
+                                color: Color.fromRGBO(133, 133, 133, 1)),
+                          ),
+                        )
+                      : Container(),
                   Container(
                       margin: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width / 5,
-                          top: 5,
+                          top: chk == 1 ? 5 : 35,
                           right: MediaQuery.of(context).size.width / 5),
                       child: chk == 1 ? userText : editUser),
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width / 5, top: 30),
-                    child: Text(
-                      'Name',
-                      style: TextStyle(
-                          fontSize: 22,
-                          color: Color.fromRGBO(133, 133, 133, 1)),
-                    ),
-                  ),
+                  chk == 1
+                      ? Container(
+                          margin: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width / 5,
+                              top: 30),
+                          child: Text(
+                            'Name',
+                            style: TextStyle(
+                                fontSize: 22,
+                                color: Color.fromRGBO(133, 133, 133, 1)),
+                          ),
+                        )
+                      : Container(),
                   Container(
                       margin: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width / 5,
-                          top: 5,
+                          top: chk == 1 ? 5 : 35,
                           right: MediaQuery.of(context).size.width / 5),
                       child: chk == 1 ? fnameText : editFname),
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width / 5,
-                        top: 30,
-                        right: MediaQuery.of(context).size.width / 5),
-                    child: Text(
-                      'Surname',
-                      style: TextStyle(
-                          fontSize: 22,
-                          color: Color.fromRGBO(133, 133, 133, 1)),
-                    ),
-                  ),
+                  chk == 1
+                      ? Container(
+                          margin: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width / 5,
+                              top: 30,
+                              right: MediaQuery.of(context).size.width / 5),
+                          child: Text(
+                            'Surname',
+                            style: TextStyle(
+                                fontSize: 22,
+                                color: Color.fromRGBO(133, 133, 133, 1)),
+                          ),
+                        )
+                      : Container(),
                   Container(
                       margin: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width / 5,
-                          top: 5,
+                          top: chk == 1 ? 5 : 35,
                           right: MediaQuery.of(context).size.width / 5),
                       child: chk == 1 ? lnameText : editLname),
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width / 5, top: 30),
-                    child: Text(
-                      'Telphone',
-                      style: TextStyle(
-                          fontSize: 22,
-                          color: Color.fromRGBO(133, 133, 133, 1)),
-                    ),
-                  ),
+                  chk == 1
+                      ? Container(
+                          margin: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width / 5,
+                              top: 30),
+                          child: Text(
+                            'Telphone',
+                            style: TextStyle(
+                                fontSize: 22,
+                                color: Color.fromRGBO(133, 133, 133, 1)),
+                          ),
+                        )
+                      : Container(),
                   Container(
                     margin: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width / 5,
-                        top: 5,
+                        top: chk == 1 ? 5 : 35,
                         right: MediaQuery.of(context).size.width / 5),
                     child: chk == 1 ? telText : editTel,
                   ),
-                  Container(
+                  chk == 1 ? Container(
                     margin: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width / 5, top: 30),
                     child: Text(
@@ -299,11 +355,11 @@ class _ProfileState extends State<ProfilePage> {
                           fontSize: 22,
                           color: Color.fromRGBO(133, 133, 133, 1)),
                     ),
-                  ),
+                  ) : Container(),
                   Container(
                       margin: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width / 5,
-                          top: 5,
+                          top: chk == 1 ? 5 : 35,
                           right: MediaQuery.of(context).size.width / 5),
                       child: chk == 1 ? addressText : editAddress),
                 ],
