@@ -3,14 +3,22 @@ import 'dart:convert';
 
 import 'package:booking_carcare_app/helpers/manageToken.dart';
 import 'package:booking_carcare_app/models/CarModel.dart';
+import 'package:booking_carcare_app/models/CarWashModel.dart';
+import 'package:booking_carcare_app/models/CleanServiceCheckBox.dart';
 import 'package:booking_carcare_app/models/CleanServiceModel.dart';
 import 'package:booking_carcare_app/pages/reservation/CheckBoxCleanService.dart';
 import 'package:booking_carcare_app/pages/reservation/DropDownCar.dart';
+import 'package:booking_carcare_app/pages/reservation/DropdownWashCar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ReservePage extends StatefulWidget {
+  final List<CleanServiceCheckBox> checkBoxList =
+      new List<CleanServiceCheckBox>();
+  Item data;
+
+  ReservePage({Key key, this.data});
 
   @override
   State<StatefulWidget> createState() {
@@ -31,12 +39,11 @@ class Item {
   }
 }
 
-class CleanService {
-  CleanService(this.value, this.name, this.isCheck);
+class CarWashDropdown {
+  const CarWashDropdown(this.value, this.name);
 
-  int value;
-  String name;
-  bool isCheck;
+  final int value;
+  final String name;
 
   getValue() {
     return this.value;
@@ -44,9 +51,8 @@ class CleanService {
 }
 
 class _ReserveState extends State<ReservePage> {
-
   List<Item> carList = List<Item>();
-  List<CleanService> checkBoxList = new List<CleanService>();
+  List<CarWashDropdown> carWashList = List<CarWashDropdown>();
   var seleteItem;
 
   Future<List<Item>> _getCar() async {
@@ -54,7 +60,7 @@ class _ReserveState extends State<ReservePage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     http.Response response = await http.get(
-        'http://157.179.133.86:3000/app/getDetailCarByMember/${id}',
+        'http://192.168.1.134:3000/app/getDetailCarByMember/${id}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarModel.fromJson(res);
@@ -71,62 +77,142 @@ class _ReserveState extends State<ReservePage> {
     return carList;
   }
 
-  Future<List<CleanService>> _getCleanService() async {
+  Future<List<CleanServiceCheckBox>> _getCleanService() async {
     var _token = manageToken();
     var _bearerToken = await _token.readToken();
+    var typeCar = widget.data.typeCar;
     http.Response response = await http.get(
-        'http://157.179.133.86:3000/app/getCleanServiceByTypeCar/1',
+        'http://192.168.1.134:3000/app/getCleanServiceByTypeCar/${typeCar}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CleanServiceModel.fromJson(res);
     for (int i = 0; i < data.data.length; i++) {
-      checkBoxList.add(CleanService(data.data[i].cleanServiceDetailId , data.data[i].serviceName , true));
+      widget.checkBoxList.add(CleanServiceCheckBox(
+          data.data[i].cleanServiceDetailId, data.data[i].serviceName, false));
     }
-    return checkBoxList;
+    return widget.checkBoxList;
   }
 
+  Future<List<CarWashDropdown>> _getWashCar() async {
+    var _token = manageToken();
+    var _bearerToken = await _token.readToken();
+    http.Response response = await http.get(
+        'http://192.168.1.134:3000/app/getAllCar_wash',
+        headers: {'Authorization': _bearerToken});
+    var res = json.decode(response.body);
+    var data = CarWashModel.fromJson(res);
+    for (int i = 0; i < data.data.length; i++) {
+      carWashList.add(
+          CarWashDropdown(data.data[i].carWashId, data.data[i].carWashName));
+    }
+    return carWashList;
+  }
+  var now = new DateTime.now();
   @override
   Widget build(BuildContext context) {
+
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('จองคิวล้างรถ')
-      ),
+      appBar: new AppBar(title: new Text('จองคิวล้างรถ')),
       body: new Center(
         child: new Column(
           children: <Widget>[
             new Container(
-                child : new FutureBuilder(
-                    future: _getCar(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                        return DropdownScreen(carList: snapshot.data);
-                      } else {
-                        return Container();
-                      }
-                    }
-                )
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text("เลือกรถที่ต้องกาาร"),
+                  new Container(
+                      child: new FutureBuilder(
+                          future: _getCar(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              return DropdownScreen(carList: snapshot.data);
+                            } else {
+                              return Container();
+                            }
+                          })),
+                ],
+              ),
             ),
-            new Container(
-                child : new FutureBuilder(
-                    future: _getCleanService(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                        return new Expanded(
-                            child: new ListView(
-                              padding: new EdgeInsets.symmetric(vertical: 8.0),
-                              children: snapshot.data.map((checkbox) {
-                                return new CheckBoxCleanService(checkbox: checkbox);
+            widget.data != null
+                ? new Container(
+                    child: new FutureBuilder(
+                        future: _getCleanService(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            return new Container(
+                                 height: 200,
+                                child: new ListView(
+                              padding: new EdgeInsets.symmetric(vertical: 2.0),
+                              children: widget.checkBoxList.map((checkbox) {
+                                return CheckBoxCleanService(checkbox: checkbox);
                               }).toList(),
                             ));
-                      } else {
-                        return Container();
-                      }
-                    }
-                )
+                          } else {
+                            return Container();
+                          }
+                        }))
+                : Container(),
+            new Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text("เลือกช่องล้างรถ"),
+                  new Container(
+                      child: new FutureBuilder(
+                          future: _getWashCar(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              return DropdownWashCar(
+                                  carWashList: snapshot.data);
+                            } else {
+                              return Container();
+                            }
+                          })),
+                ],
+              ),
+            ),
+            new Container(
+                    child: TextFormField(
+                      // autofocus: true,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: now.toString(),
+                        labelStyle: TextStyle(
+                          color: Colors.purple,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 20,
+                        ),
+                      ),
+                      style: TextStyle(fontSize: 20, color: Colors.deepPurple),
+                    ),
+            ),
+            new Container(
+              child : Column(
+                children: <Widget>[
+                  //_queue()
+                ],
+              )
             )
           ],
         ),
       ),
     );
   }
+//  Widget _queue(){
+//    return ListView.builder(
+//      itemCount: _timeList.length,
+//      itemBuilder: (context, index) {
+//        return Card( //                           <-- Card widget
+//          child: ListTile(
+//              title: Text(_timeList[index])
+//          ),
+//        );
+//      },
+//    );
+//  }
 }
