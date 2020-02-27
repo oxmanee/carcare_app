@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:booking_carcare_app/models/provinceModel.dart';
 import 'package:booking_carcare_app/models/regisModel.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +23,16 @@ class Success {
   Success(this.result);
 
   Success.fromJson(Map<String, dynamic> json) : result = json['result'];
+}
+
+class DropdownProvince {
+
+  DropdownProvince(
+      this.provinceId,
+      this.provinceName,
+      );
+  int provinceId;
+  String provinceName;
 }
 
 Future _getLogin(
@@ -58,6 +70,25 @@ class _RegigState extends State<RegisPage> {
   TextEditingController _telController = TextEditingController();
 
   List<Widget> _addList = List<Widget>();
+  List<DropdownProvince> _drp = List<DropdownProvince>();
+
+  Future<List<DropdownProvince>> _getProvince() async {
+    final response = await http
+        .get("http://192.168.163.2:3000/app/getAllProvince", headers: {
+      HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
+    });
+    var res = json.decode(response.body);
+    var data = ProvinceModel.fromJson(res);
+
+
+    for (int i = 0; i < data.data.length; i++) {
+      _drp.add(DropdownProvince(data.data[i].provinceId, data.data[i].provinceName));
+    }
+
+    return _drp;
+  }
+
+  DropdownProvince selectedUser;
 
   Widget build(BuildContext context) {
     void addCar() {
@@ -84,13 +115,19 @@ class _RegigState extends State<RegisPage> {
               )),
             ),
             Container(
-              margin: EdgeInsets.only(right: 15),
-              width: MediaQuery.of(context).size.width / 5,
-              child: TextFormField(
-                  decoration: InputDecoration(
-                labelText: "Province",
-              )),
-            ),
+                margin: EdgeInsets.only(right: 15),
+                width: MediaQuery.of(context).size.width / 5,
+                child: Container(
+                  child: FutureBuilder(
+                      future: _getProvince(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return getDropdown(snapshot.data);
+                        } else {
+                          return Container();
+                        }
+                      }),
+                )),
             Container(
               child: InkWell(
                   onTap: () {
@@ -115,47 +152,6 @@ class _RegigState extends State<RegisPage> {
         ));
       });
     }
-
-//    for (var i = 0; i < _add; i++) {
-//      _addList.add(Row(
-//        children: <Widget>[
-//          Container(
-//            margin: EdgeInsets.only(right: 15),
-//            width: MediaQuery.of(context).size.width / 5,
-//            child: TextFormField(
-//                decoration: InputDecoration(
-//              labelText: "Car",
-//            )),
-//          ),
-//          Container(
-//            margin: EdgeInsets.only(right: 15),
-//            width: MediaQuery.of(context).size.width / 5,
-//            child: TextFormField(
-//                decoration: InputDecoration(
-//              labelText: "Car code",
-//            )),
-//          ),
-//          Container(
-//            margin: EdgeInsets.only(right: 15),
-//            width: MediaQuery.of(context).size.width / 5,
-//            child: TextFormField(
-//                decoration: InputDecoration(
-//              labelText: "Province",
-//            )),
-//          ),
-//          GestureDetector(
-//            onTap: () {
-//              setState(() {
-//                _addList.removeAt(i);
-//              });
-//            },
-//            child: Container(
-//              child: Icon(Icons.remove),
-//            ),
-//          ),
-//        ],
-//      ));
-//    }
 
     void _showDialog(title, valid) {
       // flutter defined function
@@ -183,6 +179,14 @@ class _RegigState extends State<RegisPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              colorFilter: new ColorFilter.mode(
+                  Colors.black.withOpacity(0.2), BlendMode.dstATop),
+              image: AssetImage('images/template.png'),
+              fit: BoxFit.fill,
+            ),
+          ),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: ListView(
@@ -405,6 +409,32 @@ class _RegigState extends State<RegisPage> {
           ),
         ),
       ),
+    );
+  }
+  Widget getDropdown(List<DropdownProvince> dropdownList){
+    DropdownButton<DropdownProvince>(
+      hint: Text("Select item"),
+      value: selectedUser,
+      onChanged: (DropdownProvince Value) {
+        setState(() {
+          selectedUser = Value;
+        });
+      },
+      items: dropdownList.map((DropdownProvince val) {
+        return DropdownMenuItem<DropdownProvince>(
+            value: val,
+            child: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  val.provinceName,
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
+            ));
+      }),
     );
   }
 }

@@ -105,7 +105,15 @@ class _LoginState extends State<LoginPage> {
 
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            colorFilter: new ColorFilter.mode(
+                Colors.black.withOpacity(0.3), BlendMode.dstATop),
+            image: AssetImage('images/template.png'),
+            fit: BoxFit.fill,
+          ),
+          ),
+          padding: EdgeInsets.only(
             top: MediaQuery.of(context).size.width / 6,
             left: 40,
             right: 40,
