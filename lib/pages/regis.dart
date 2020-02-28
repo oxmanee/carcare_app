@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:booking_carcare_app/models/provinceModel.dart';
+import 'package:booking_carcare_app/models/ProvinceModel.dart';
 import 'package:booking_carcare_app/models/regisModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -27,12 +27,12 @@ class Success {
 
 class DropdownProvince {
 
-  DropdownProvince(
+  const DropdownProvince(
       this.provinceId,
-      this.provinceName,
+      this.provinceName
       );
-  int provinceId;
-  String provinceName;
+  final int provinceId;
+  final String provinceName;
 }
 
 Future _getLogin(
@@ -49,7 +49,7 @@ Future _getLogin(
   var jsonRequest = req.toJson();
 
   http.Response response = await http.post(
-      "http://192.168.163.2:3000/app/insertMember",
+      "http://192.168.1.134:3000/app/insertMember",
       body: jsonRequest,
       headers: {
         HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
@@ -70,22 +70,28 @@ class _RegigState extends State<RegisPage> {
   TextEditingController _telController = TextEditingController();
 
   List<Widget> _addList = List<Widget>();
-  List<DropdownProvince> _drp = List<DropdownProvince>();
+  Future<List<DropdownProvince>> _drp;
+
+  void initState(){
+    super.initState();
+    _drp = _getProvince();
+  }
 
   Future<List<DropdownProvince>> _getProvince() async {
     final response = await http
-        .get("http://192.168.163.2:3000/app/getAllProvince", headers: {
+        .get("http://192.168.1.134:3000/app/getAllProvinceApi", headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
     var data = ProvinceModel.fromJson(res);
 
+    List<DropdownProvince> _drpList = List<DropdownProvince>();
 
     for (int i = 0; i < data.data.length; i++) {
-      _drp.add(DropdownProvince(data.data[i].provinceId, data.data[i].provinceName));
+      _drpList.add(DropdownProvince(data.data[i].provinceId, data.data[i].provinceName));
     }
 
-    return _drp;
+    return _drpList;
   }
 
   DropdownProvince selectedUser;
@@ -95,7 +101,7 @@ class _RegigState extends State<RegisPage> {
       setState(() {
         int i = _addList.length; // start 0
         //  print(i);
-        _addList.add(Row(
+        _addList.add(Column(
           key: Key("index_$i"),
           children: <Widget>[
             Container(
@@ -115,11 +121,9 @@ class _RegigState extends State<RegisPage> {
               )),
             ),
             Container(
-                margin: EdgeInsets.only(right: 15),
-                width: MediaQuery.of(context).size.width / 5,
                 child: Container(
                   child: FutureBuilder(
-                      future: _getProvince(),
+                      future: _drp,
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           return getDropdown(snapshot.data);
@@ -127,7 +131,8 @@ class _RegigState extends State<RegisPage> {
                           return Container();
                         }
                       }),
-                )),
+                )
+            ),
             Container(
               child: InkWell(
                   onTap: () {
@@ -412,7 +417,7 @@ class _RegigState extends State<RegisPage> {
     );
   }
   Widget getDropdown(List<DropdownProvince> dropdownList){
-    DropdownButton<DropdownProvince>(
+    return DropdownButton<DropdownProvince>(
       hint: Text("Select item"),
       value: selectedUser,
       onChanged: (DropdownProvince Value) {
@@ -429,12 +434,12 @@ class _RegigState extends State<RegisPage> {
                   width: 10,
                 ),
                 Text(
-                  val.provinceName,
-                  style: TextStyle(color: Colors.black),
+                  val.provinceName
                 ),
               ],
-            ));
-      }),
+            )
+        );
+      }).toList(),
     );
   }
 }
