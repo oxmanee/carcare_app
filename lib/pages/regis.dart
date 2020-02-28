@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:booking_carcare_app/models/ProvinceModel.dart';
 import 'package:booking_carcare_app/models/regisModel.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -23,6 +25,16 @@ class Success {
   Success.fromJson(Map<String, dynamic> json) : result = json['result'];
 }
 
+class DropdownProvince {
+
+  const DropdownProvince(
+      this.provinceId,
+      this.provinceName
+      );
+  final int provinceId;
+  final String provinceName;
+}
+
 Future _getLogin(
     username, password, fname, lname, address, tel, cashierId) async {
   var req = RegisModel();
@@ -37,7 +49,7 @@ Future _getLogin(
   var jsonRequest = req.toJson();
 
   http.Response response = await http.post(
-      "http://192.168.163.2:3000/app/insertMember",
+      "http://192.168.1.134:3000/app/insertMember",
       body: jsonRequest,
       headers: {
         HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
@@ -58,13 +70,38 @@ class _RegigState extends State<RegisPage> {
   TextEditingController _telController = TextEditingController();
 
   List<Widget> _addList = List<Widget>();
+  Future<List<DropdownProvince>> _drp;
+
+  void initState(){
+    super.initState();
+    _drp = _getProvince();
+  }
+
+  Future<List<DropdownProvince>> _getProvince() async {
+    final response = await http
+        .get("http://192.168.1.134:3000/app/getAllProvinceApi", headers: {
+      HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
+    });
+    var res = json.decode(response.body);
+    var data = ProvinceModel.fromJson(res);
+
+    List<DropdownProvince> _drpList = List<DropdownProvince>();
+
+    for (int i = 0; i < data.data.length; i++) {
+      _drpList.add(DropdownProvince(data.data[i].provinceId, data.data[i].provinceName));
+    }
+
+    return _drpList;
+  }
+
+  DropdownProvince selectedUser;
 
   Widget build(BuildContext context) {
     void addCar() {
       setState(() {
         int i = _addList.length; // start 0
         //  print(i);
-        _addList.add(Row(
+        _addList.add(Column(
           key: Key("index_$i"),
           children: <Widget>[
             Container(
@@ -84,12 +121,17 @@ class _RegigState extends State<RegisPage> {
               )),
             ),
             Container(
-              margin: EdgeInsets.only(right: 15),
-              width: MediaQuery.of(context).size.width / 5,
-              child: TextFormField(
-                  decoration: InputDecoration(
-                labelText: "Province",
-              )),
+                child: Container(
+                  child: FutureBuilder(
+                      future: _drp,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          return getDropdown(snapshot.data);
+                        } else {
+                          return Container();
+                        }
+                      }),
+                )
             ),
             Container(
               child: InkWell(
@@ -115,47 +157,6 @@ class _RegigState extends State<RegisPage> {
         ));
       });
     }
-
-//    for (var i = 0; i < _add; i++) {
-//      _addList.add(Row(
-//        children: <Widget>[
-//          Container(
-//            margin: EdgeInsets.only(right: 15),
-//            width: MediaQuery.of(context).size.width / 5,
-//            child: TextFormField(
-//                decoration: InputDecoration(
-//              labelText: "Car",
-//            )),
-//          ),
-//          Container(
-//            margin: EdgeInsets.only(right: 15),
-//            width: MediaQuery.of(context).size.width / 5,
-//            child: TextFormField(
-//                decoration: InputDecoration(
-//              labelText: "Car code",
-//            )),
-//          ),
-//          Container(
-//            margin: EdgeInsets.only(right: 15),
-//            width: MediaQuery.of(context).size.width / 5,
-//            child: TextFormField(
-//                decoration: InputDecoration(
-//              labelText: "Province",
-//            )),
-//          ),
-//          GestureDetector(
-//            onTap: () {
-//              setState(() {
-//                _addList.removeAt(i);
-//              });
-//            },
-//            child: Container(
-//              child: Icon(Icons.remove),
-//            ),
-//          ),
-//        ],
-//      ));
-//    }
 
     void _showDialog(title, valid) {
       // flutter defined function
@@ -183,6 +184,14 @@ class _RegigState extends State<RegisPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              colorFilter: new ColorFilter.mode(
+                  Colors.black.withOpacity(0.2), BlendMode.dstATop),
+              image: AssetImage('images/template.png'),
+              fit: BoxFit.fill,
+            ),
+          ),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: ListView(
@@ -405,6 +414,32 @@ class _RegigState extends State<RegisPage> {
           ),
         ),
       ),
+    );
+  }
+  Widget getDropdown(List<DropdownProvince> dropdownList){
+    return DropdownButton<DropdownProvince>(
+      hint: Text("Select item"),
+      value: selectedUser,
+      onChanged: (DropdownProvince Value) {
+        setState(() {
+          selectedUser = Value;
+        });
+      },
+      items: dropdownList.map((DropdownProvince val) {
+        return DropdownMenuItem<DropdownProvince>(
+            value: val,
+            child: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  val.provinceName
+                ),
+              ],
+            )
+        );
+      }).toList(),
     );
   }
 }
