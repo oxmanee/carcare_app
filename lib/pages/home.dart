@@ -153,7 +153,7 @@ class _HomeState extends State<HomePage> {
               Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
-                  onTap: () => debugPrint("home Page"),
+                  onTap: () => Navigator.pushNamed(context, '/booking'),
                   child: ListTile(
                     title: Text("Booking Page"),
                     leading: Icon(
@@ -194,8 +194,8 @@ class _HomeState extends State<HomePage> {
                       onTap: () async {
                         var manageData = manageToken();
                         await manageData.clearData();
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/main', (Route<dynamic> route) => false);
                       }),
                 ),
               ),
@@ -214,7 +214,7 @@ class _HomeState extends State<HomePage> {
                       return Card(
                         child: Padding(
                           padding: EdgeInsets.all(16.00),
-                            child: Text(litems[index].toString()),
+                          child: Text(litems[index].toString()),
                         ),
                       );
                     })

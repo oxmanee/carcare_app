@@ -1,3 +1,4 @@
+import 'package:booking_carcare_app/pages/booking.dart';
 import 'package:booking_carcare_app/pages/home.dart';
 import 'package:booking_carcare_app/pages/login.dart';
 import 'package:booking_carcare_app/pages/profile.dart';
@@ -15,7 +16,8 @@ class MyApp extends StatelessWidget {
         '/main': (context) => LoginPage(),
         '/regis': (context) => RegisPage(),
         '/home': (context) => HomePage(),
-        '/profile': (context) => ProfilePage()
+        '/profile': (context) => ProfilePage(),
+        '/booking': (context) => BookingPage()
       },
     );
   }
