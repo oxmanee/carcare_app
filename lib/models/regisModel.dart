@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:booking_carcare_app/models/carRequest.dart';
+
 RegisModel regisModelFromJson(String str) => RegisModel.fromJson(json.decode(str));
 
 String regisModelToJson(RegisModel data) => json.encode(data.toJson());
@@ -11,7 +13,8 @@ class RegisModel {
   String lname;
   String address;
   String tel;
-  String cashierId;
+  int cashierId;
+  List<CarRequest> carDetail;
 
   RegisModel({
     this.username,
@@ -20,17 +23,17 @@ class RegisModel {
     this.lname,
     this.address,
     this.tel,
-    this.cashierId,
+    this.carDetail
   });
 
-  factory RegisModel.fromJson(Map<String, dynamic> json) => RegisModel(
+  factory RegisModel.fromJson(Map<String, Object> json) => RegisModel(
     username: json["username"],
     password: json["password"],
     fname: json["fname"],
     lname: json["lname"],
     address: json["address"],
     tel: json["tel"],
-    cashierId: json["cashier_id"],
+      carDetail: json["car_detail_id"]
   );
 
   Map<String, dynamic> toJson() => {
@@ -40,6 +43,8 @@ class RegisModel {
     "lname": lname,
     "address": address,
     "tel": tel,
-    "cashier_id": cashierId,
+    "car_detail_id" : carDetail
   };
+
+
 }
