@@ -202,7 +202,9 @@ class _BookingState extends State<BookingPage> {
               FlatButton(
                 child: Text("Close"),
                 onPressed: () {
-                  Navigator.of(context).popUntil((_) => count++ >= 3);
+                  valid == "Booking success"
+                      ? Navigator.of(context).popUntil((_) => count++ >= 3)
+                      : Navigator.of(context).pop();
                 },
               ),
             ],
