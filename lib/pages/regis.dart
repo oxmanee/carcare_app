@@ -579,6 +579,8 @@ class _RegigState extends State<RegisPage> {
                     ),
                     Container(child: _addList),
                     Container(
+                        child: Padding(
+                      padding: EdgeInsets.all(20.00),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -616,7 +618,7 @@ class _RegigState extends State<RegisPage> {
                           ),
                         ],
                       ),
-                    )
+                    ))
                   ],
                 ))),
       ),

@@ -166,7 +166,7 @@ class _HomeState extends State<HomePage> {
               Padding(
                 padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
                 child: InkWell(
-                  onTap: () => debugPrint("home Page"),
+                  onTap: () => Navigator.pushNamed(context, '/history'),
                   child: ListTile(
                     title: Text("History Page"),
                     leading: Icon(

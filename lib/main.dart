@@ -1,4 +1,5 @@
 import 'package:booking_carcare_app/pages/booking.dart';
+import 'package:booking_carcare_app/pages/history.dart';
 import 'package:booking_carcare_app/pages/home.dart';
 import 'package:booking_carcare_app/pages/login.dart';
 //import 'package:booking_carcare_app/pages/profile.dart';
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
         '/regis': (context) => RegisPage(),
         '/home': (context) => HomePage(),
 //        '/profile': (context) => ProfilePage(),
-        '/booking': (context) => BookingPage()
+        '/booking': (context) => BookingPage(),
+        '/history': (context) => HistoryPage()
       },
     );
   }
