@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:booking_carcare_app/helpers/manageToken.dart';
 import 'package:booking_carcare_app/models/CarModel.dart';
 import 'package:booking_carcare_app/models/MemberDetailModel.dart';
+import 'package:booking_carcare_app/models/ProfileModel.dart';
 import 'package:booking_carcare_app/models/provinceModel.dart';
-import 'package:booking_carcare_app/pages/regis.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -21,11 +21,40 @@ class ProfilePage extends StatefulWidget {
 
 class MemberDetailForm{
 
-  MemberDetailForm({ this.memberDetailId , this.memberLicense , this.memberProvince , this.memberCar });
-  int memberDetailId;
+  MemberDetailForm({ this.memberLicense , this.memberProvince , this.memberCar });
   String memberLicense;
   DropdownProvince memberProvince;
   CarDropdown memberCar;
+
+  @override
+  String toString() {
+    return 'MemberDetailForm{emberLicense: $memberLicense, memberProvince: $memberProvince, memberCar: $memberCar}';
+  }
+}
+
+class DropdownProvince {
+  DropdownProvince(
+      this.provinceId,
+      this.provinceName
+      );
+  int provinceId;
+  String provinceName;
+  @override
+  String toString() {
+    return 'DropdownProvince{provinceId: $provinceId, provinceName: $provinceName}';
+  }
+}
+class CarDropdown {
+  CarDropdown(this.value, this.name);
+  int value;
+  String name;
+  getValue() {
+    return this.value;
+  }
+  @override
+  String toString() {
+    return 'CarDropdown{value: $value, name: $name}';
+  }
 }
 
 class DisplayMemberDetail{
@@ -33,6 +62,14 @@ class DisplayMemberDetail{
   String car;
   String license;
   String province;
+}
+
+class Success {
+  final String result;
+
+  Success(this.result);
+
+  Success.fromJson(Map<String, dynamic> json) : result = json['result'];
 }
 
 class _ProfileState extends State<ProfilePage> {
@@ -96,6 +133,90 @@ class _ProfileState extends State<ProfilePage> {
     formCar = getMemberDetail();
   }
 
+  File _image;
+
+  Future _choose() async {
+//    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  Future _updateProfile(ProfileModel payload) async {
+    var _token = manageToken();
+    var _bearerToken = await _token.readToken();
+    var jsonRequest = payload;
+//  print(json.encode(jsonRequest.toJson()));
+
+    http.Response response = await http.post(
+        "http://157.179.133.63:3000/app/updateProfileMemberApi",
+        body: json.encode(jsonRequest),
+        headers: {
+          'Content-type' : 'application/json',
+          'accept': 'application/json',
+          'Authorization': _bearerToken
+        });
+    var responseData = json.decode(response.body);
+    var res = Success.fromJson(responseData);
+    return res.result;
+  }
+
+  void _showDialog(title, valid) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text(title),
+          content: Text(valid),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            FlatButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> submit() async {
+      var fname = _fnameController.text;
+      var lname = _lnameController.text;
+      var tel = _telController.text;
+      var address = _addressController.text;
+      String base64Image = base64Encode(_image.readAsBytesSync());
+
+      List<MemdetailForm> formMemberDetailNew = new List<MemdetailForm>();
+      for(int i=0;i<formMemberDetail.length;i++){
+        formMemberDetailNew.add(new MemdetailForm(memberCarId : formMemberDetail[i].memberCar.value , memberLicense : formMemberDetail[i].memberLicense , memberProvinceId : formMemberDetail[i].memberProvince.provinceId));
+      }
+      var _token = manageToken();
+      var id = await _token.readId();
+      ProfileModel payload = new ProfileModel(id : int.parse(id) , fname : fname , lname : lname , address : address , tel : tel , cashierId : 0 , carDetail: formMemberDetailNew );
+
+      var res = await _updateProfile(payload);
+      if (res == "success") {
+        _showDialog('SUCCESS', 'Update Profile Complete');
+        setState(() {
+          chk = 1;
+        });
+        return true;
+      } else{
+        _showDialog('Error', 'Sorry! Register Failed!');
+        return false;
+      }
+//    }
+  }
+
+
+
 
   Future<List<MemberDetailForm>> getMemberDetail() async {
 
@@ -103,7 +224,7 @@ class _ProfileState extends State<ProfilePage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     final response = await http
-        .get("http://192.168.1.139:3000/app/getMemberDetailForEditApi/${id}",
+        .get("http://157.179.133.63:3000/app/getMemberDetailForEditApi/${id}",
         headers: {'Authorization': _bearerToken , 'Content-type': 'application/x-www-form-urlencoded'});
     var res = json.decode(response.body);
     var data = MemberDetailModel.fromJson(res);
@@ -111,7 +232,9 @@ class _ProfileState extends State<ProfilePage> {
 
     for (int i = 0; i < data.data.length; i++) {
       displayCar.add(DisplayMemberDetail( car : data.data[i].car , license : data.data[i].memberLicense , province : data.data[i].provinceName ));
-      formMemberDetail.add(MemberDetailForm(memberDetailId : data.data[i].memberDetailId , memberLicense : data.data[i].memberLicense , memberProvince : DropdownProvince(data.data[i].memberProvince , data.data[i].provinceName) , memberCar: CarDropdown(data.data[i].memberCarDetailId , data.data[i].car)));
+      var memPro = new DropdownProvince(data.data[i].memberProvince , data.data[i].provinceName);
+      var memCar = new CarDropdown(data.data[i].memberCarDetailId , data.data[i].car);
+      formMemberDetail.add(MemberDetailForm(memberLicense : data.data[i].memberLicense , memberProvince : memPro , memberCar: memCar));
     }
 
     return formMemberDetail;
@@ -122,7 +245,7 @@ class _ProfileState extends State<ProfilePage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     http.Response response = await http.get(
-        'http://192.168.1.139:3000/app/getDetailCarByMemberApi/${id}',
+        'http://157.179.133.63:3000/app/getDetailCarByMemberApi/${id}',
         headers: {
           HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
         });
@@ -143,7 +266,7 @@ class _ProfileState extends State<ProfilePage> {
 
   Future<List<DropdownProvince>> _getProvince() async {
     final response = await http
-        .get("http://192.168.1.139:3000/app/getAllProvinceApi", headers: {
+        .get("http://157.179.133.63:3000/app/getAllProvinceApi", headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
@@ -163,7 +286,7 @@ class _ProfileState extends State<ProfilePage> {
 //        int i = _addList.length; // start 0
       //  print(i);
       if(status == 1){
-        formMemberDetail.add(MemberDetailForm(memberDetailId : 0, memberLicense : null, memberCar: null));
+        formMemberDetail.add(MemberDetailForm(memberLicense : null, memberProvince: null , memberCar: null));
       }
 
       _addList =
@@ -239,6 +362,7 @@ class _ProfileState extends State<ProfilePage> {
                                           formMemberDetail[index].memberLicense = value;
                                         }
                                       },
+                                      controller: new TextEditingController(text: formMemberDetail[index].memberLicense),
                                     )
                                 ),
                                 Container(
@@ -289,19 +413,20 @@ class _ProfileState extends State<ProfilePage> {
         );
     });
   }
-
   Widget getDropdownCar(List<CarDropdown> dropdownList , index){
+    var _value = formMemberDetail[index].memberCar == null
+        ? formMemberDetail[index].memberCar
+        : dropdownList.firstWhere((item) => item.value == formMemberDetail[index].memberCar.value);
     var button = DropdownButton<CarDropdown>(
       hint: Text("Select item"),
-      value: formMemberDetail[index].memberCar,
-//      isExpanded: true,
+      value: _value,
       onChanged: (CarDropdown Value) {
         setState(() {
-          for (int i = 0; i < formMemberDetail.length; i++) {
-            formMemberDetail[index].memberCar = Value;
+            for (int i = 0; i < formMemberDetail.length; i++) {
+              formMemberDetail[index].memberCar = Value;
 //              formCarList[formCarList.length - 1].car = Value.value;
-          }
-          addCar(0);
+            }
+            addCar(0);
         });
       },
       items: dropdownList.map((CarDropdown val) {
@@ -325,9 +450,12 @@ class _ProfileState extends State<ProfilePage> {
   }
 
   Widget getDropdownProvince(List<DropdownProvince> dropdownList , index) {
+    var _value = formMemberDetail[index].memberProvince == null
+        ? formMemberDetail[index].memberProvince
+        : dropdownList.firstWhere((item) => item.provinceId == formMemberDetail[index].memberProvince.provinceId);
     return DropdownButton<DropdownProvince>(
       hint: Text("Select item"),
-      value: formMemberDetail.isEmpty ? null : formMemberDetail[index].memberProvince,
+      value: _value,
       isDense: true,
       onChanged: (DropdownProvince Value) {
         setState(() {
@@ -358,6 +486,7 @@ class _ProfileState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+
     Widget userText = Text(
       user != null && user != '' ? user : '',
       style: TextStyle(fontSize: 18, color: Colors.black),
@@ -515,17 +644,80 @@ class _ProfileState extends State<ProfilePage> {
       color: Color.fromRGBO(114, 114, 114, 1),
     );
 
-    Widget saveBtn = FlatButton(
-        onPressed: () {
-          setState(() {
-            chk = 1;
-          });
-        },
+    Widget saveBtn = RaisedButton(
+        onPressed: submit,
         child: Text(
           'Save',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
         color: Colors.indigo);
+
+    Widget image = Stack(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 20),
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.grey,
+          ),
+          child: Padding(
+              padding: EdgeInsets.all(2),
+              child: SizedBox(
+                  width: 15,
+                  height: 15,
+                  child: Icon(Icons.person,
+                      size: 30.0 )
+              )),
+        ),
+        Container(
+          child: Positioned(
+            top: 88,
+            left: 70,
+            child: Icon(Icons.camera_alt,
+                size: 30.0, color: Colors.black),
+          ),
+        )
+      ],
+    );
+
+    Widget editImage =
+            Stack(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: (){
+                    _choose();
+                  },
+                    child : Container(
+                      margin: EdgeInsets.only(top: 20),
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                      ),
+                      child: Padding(
+                          padding: EdgeInsets.all(2),
+                          child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child: _image == null
+                                  ? Text('No image selected.')
+                                  : Image.file(_image)
+                          )),
+                    )
+                ),
+                Container(
+                  child: Positioned(
+                        top: 88,
+                        left: 70,
+                        child: Icon(Icons.camera_alt,
+                            size: 30.0, color: Colors.black),
+                      ),
+                )
+              ],
+            );
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -562,35 +754,8 @@ class _ProfileState extends State<ProfilePage> {
                     ),
                   ),
                   Center(
-                      child: Stack(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(top: 20),
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey,
-                        ),
-                        child: Padding(
-                            padding: EdgeInsets.all(2),
-                            child: SizedBox(
-                                width: 15,
-                                height: 15,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 70,
-                                  color: Colors.white,
-                                ))),
-                      ),
-                      Positioned(
-                        top: 88,
-                        left: 66,
-                        child: Icon(Icons.camera_alt,
-                            size: 30.0, color: Colors.black),
-                      ),
-                    ],
-                  )),
+                      child: image,
+                  ),
                   Container(
                     margin: EdgeInsets.only(top: 20),
                     child: Text(
