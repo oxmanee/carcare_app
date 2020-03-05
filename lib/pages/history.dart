@@ -38,7 +38,7 @@ class _HistoryState extends State<HistoryPage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     http.Response response = await http
-        .get('http://157.179.133.41:3000/app/getQueueForMemberApi/${id}', headers: {
+        .get('http://192.168.163.2:3000/app/getQueueForMemberApi/${id}', headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
       'Authorization': _bearerToken
     });

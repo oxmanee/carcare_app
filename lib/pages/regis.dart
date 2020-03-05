@@ -112,8 +112,6 @@ class _RegigState extends State<RegisPage> {
 
   Future<List<CarDropdown>> _getCar() async {
     var _token = manageToken();
-    var _bearerToken = await _token.readToken();
-    var id = await _token.readId();
     http.Response response = await http
         .get('http://192.168.163.2:3000/app/getDetailCarByMemberApi', headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
@@ -254,6 +252,9 @@ class _RegigState extends State<RegisPage> {
       //  print(i);
       if (status == 1) {
         formCarList.add(Car(null, null, null));
+        setState(() {
+
+        });
       }
 
       _addList = ListView.builder(

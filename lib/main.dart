@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/main': (context) => LoginPage(),
         '/regis': (context) => RegisPage(),
-        '/home': (context) => HistoryPage(),
+        '/home': (context) => HomePage(),
         '/profile': (context) => ProfilePage(),
         '/booking': (context) => BookingPage(),
         '/history': (context) => HistoryPage(),

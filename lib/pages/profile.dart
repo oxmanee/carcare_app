@@ -9,7 +9,6 @@ import 'package:booking_carcare_app/models/provinceModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -137,11 +136,11 @@ class _ProfileState extends State<ProfilePage> {
 
   Future _choose() async {
 //    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+//    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _image = image;
-    });
+//    setState(() {
+//      _image = image;
+//    });
   }
 
   Future _updateProfile(ProfileModel payload) async {
