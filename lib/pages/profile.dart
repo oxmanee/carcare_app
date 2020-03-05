@@ -151,7 +151,7 @@ class _ProfileState extends State<ProfilePage> {
 //  print(json.encode(jsonRequest.toJson()));
 
     http.Response response = await http.post(
-        "http://157.179.133.63:3000/app/updateProfileMemberApi",
+        "http://192.168.1.144:3000/app/updateProfileMemberApi",
         body: json.encode(jsonRequest),
         headers: {
           'Content-type' : 'application/json',
@@ -224,7 +224,7 @@ class _ProfileState extends State<ProfilePage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     final response = await http
-        .get("http://157.179.133.63:3000/app/getMemberDetailForEditApi/${id}",
+        .get("http://192.168.1.144:3000/app/getMemberDetailForEditApi/${id}",
         headers: {'Authorization': _bearerToken , 'Content-type': 'application/x-www-form-urlencoded'});
     var res = json.decode(response.body);
     var data = MemberDetailModel.fromJson(res);
@@ -245,7 +245,7 @@ class _ProfileState extends State<ProfilePage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     http.Response response = await http.get(
-        'http://157.179.133.63:3000/app/getDetailCarByMemberApi/${id}',
+        'http://192.168.1.144:3000/app/getDetailCarByMemberApi/${id}',
         headers: {
           HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
         });
@@ -266,7 +266,7 @@ class _ProfileState extends State<ProfilePage> {
 
   Future<List<DropdownProvince>> _getProvince() async {
     final response = await http
-        .get("http://157.179.133.63:3000/app/getAllProvinceApi", headers: {
+        .get("http://192.168.1.144:3000/app/getAllProvinceApi", headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
@@ -325,84 +325,139 @@ class _ProfileState extends State<ProfilePage> {
                     return Column(
                       children: <Widget>[
                         Form(
-                          child: Card(
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  child: new Row(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 16),
+                            child: Card(
+                              elevation: 4,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                child: Container(
+                                  width: 300.0,
+                                  height: 200.0,
+                                  child: Column(
                                     children: <Widget>[
-                                      new Text("เลือกรถ"),
-                                      new Container(
-                                        child : new FutureBuilder(
-                                            future: _carList,
-                                            builder: (BuildContext context, AsyncSnapshot snapshot) {
-                                              if (snapshot.hasData) {
-                                                return getDropdownCar(snapshot.data , index);
-                                              } else {
-                                                return Container();
-                                              }
-                                            }),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                    margin: EdgeInsets.only(top: 15.0, bottom: 10.0),
-                                    child : TextFormField(
-                                      decoration: InputDecoration(
-                                        labelText: "Car code",
+                                      Container(
+                                        child: Align(
+                                          alignment: Alignment.topRight,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.deepPurpleAccent,
+                                            ),
+                                            child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    formMemberDetail.removeAt(index);
+                                                    addCar(0);
+                                                  });
+                                                },
+                                                child: Icon(
+                                                  Icons.clear,
+                                                  color: Colors.white,
+                                                )),
+                                          ),
+                                        ),
                                       ),
-                                      onChanged: (text) {
-                                        for(int i=0;i<formMemberDetail.length;i++){
-                                          formMemberDetail[index].memberLicense = text;
-                                        }
-                                      },
-                                      onSaved: (String value) {
-                                        for(int i=0;i<formMemberDetail.length;i++){
-                                          formMemberDetail[index].memberLicense = value;
-                                        }
-                                      },
-                                      controller: new TextEditingController(text: formMemberDetail[index].memberLicense),
-                                    )
-                                ),
-                                Container(
-                                  child: Row(
-                                    children: <Widget>[
-                                      new Container(
-                                        margin: EdgeInsets.only(top: 15.0, bottom: 10.0),
-                                        child: new Row(
+                                      Container(
+                                        child: Row(
                                           children: <Widget>[
-                                            Text("เลือกจังหวัด"),
-                                            new Container(
+                                            Text(
+                                              "Car",
+                                              style: TextStyle(
+                                                  color: Colors.deepPurple, fontSize: 16),
+                                            ),
+                                            Container(
                                               child: FutureBuilder(
-                                                  future: _drp,
-                                                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                                  future: _carList,
+                                                  builder: (BuildContext context,
+                                                      AsyncSnapshot snapshot) {
                                                     if (snapshot.hasData) {
-                                                      return getDropdownProvince(snapshot.data , index);
+                                                      return Container(
+                                                        child: getDropdownCar(
+                                                            snapshot.data, index),
+                                                      );
                                                     } else {
                                                       return Container();
                                                     }
                                                   }),
                                             ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Text(
+                                              "Code",
+                                              style: TextStyle(
+                                                  fontSize: 16, color: Colors.purple),
+                                            ),
                                             Container(
-                                              child: InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      formMemberDetail.removeAt(index);
-                                                      addCar(0);
-                                                    });
-                                                  },
-                                                  child: Icon(Icons.remove)),
+                                              margin: EdgeInsets.only(left: 35),
+                                              width: 150,
+                                              child: TextFormField(
+                                                decoration: InputDecoration(
+                                                  hintText: 'xx 0000',
+                                                  contentPadding: EdgeInsets.symmetric(
+                                                      vertical: 5.0, horizontal: 10.0),
+                                                ),
+                                                onChanged: (text) {
+                                                  for (int i = 0;
+                                                  i < formMemberDetail.length;
+                                                  i++) {
+                                                    formMemberDetail[index]
+                                                        .memberLicense = text;
+                                                  }
+                                                },
+                                                onSaved: (String value) {
+                                                  for (int i = 0;
+                                                  i < formMemberDetail.length;
+                                                  i++) {
+                                                    formMemberDetail[index]
+                                                        .memberLicense = value;
+                                                  }
+                                                },
+                                                controller: new TextEditingController(text: formMemberDetail[index].memberLicense),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(top: 22),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Text(
+                                              "Province",
+                                              style: TextStyle(
+                                                  color: Colors.deepPurple, fontSize: 16),
+                                            ),
+                                            Container(
+                                              alignment: Alignment.topLeft,
+                                              child: FutureBuilder(
+                                                  future: _drp,
+                                                  builder: (BuildContext context,
+                                                      AsyncSnapshot snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      return Container(
+                                                        margin: EdgeInsets.only(left: 10),
+                                                        child: getDropdownProvince(
+                                                            snapshot.data, index),
+                                                      );
+                                                    } else {
+                                                      return Container();
+                                                    }
+                                                  }),
                                             ),
                                           ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                )
+                              )
                             ),
-                          ),
+                          )
                         )
                       ],
                     );
@@ -880,9 +935,9 @@ class _ProfileState extends State<ProfilePage> {
                   ) : Container(),
                   Container(
                       margin: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width / 5,
+                          left: MediaQuery.of(context).size.width / 6,
                           top: chk == 1 ? 5 : 35,
-                          right: MediaQuery.of(context).size.width / 5),
+                          right: MediaQuery.of(context).size.width / 6),
                       child: chk == 1 ? displayCarWidget : editCarWidget),
                   Container(
 

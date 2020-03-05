@@ -68,7 +68,7 @@ class _BookingState extends State<BookingPage> {
     final _bearerToken = await _token.readToken();
     final id = await _token.readId();
     final response = await http.get(
-        'http://192.168.163.2:3000/app/getDetailCarByMember/${id}',
+        'http://192.168.1.144:3000/app/getDetailCarByMember/${id}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarModel.fromJson(res);
@@ -99,10 +99,11 @@ class _BookingState extends State<BookingPage> {
 
   Future<List<CleanServiceCheckBox>> _getCleanService() async {
     var _bearerToken = await _token.readToken();
-    var typeCar = selectedCar.getValue();
+    var typeCar = selectedCar.typeCar;
     final response = await http.get(
-        'http://192.168.163.2:3000/app/getCleanServiceByTypeCar/${typeCar}',
-        headers: {'Authorization': _bearerToken});
+        'http://192.168.1.144:3000/app/getCleanServiceByTypeCar/${typeCar}',
+        headers: {HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+          'Authorization': _bearerToken});
 
     final res = json.decode(response.body);
 
@@ -137,7 +138,7 @@ class _BookingState extends State<BookingPage> {
   Future<List<CarWashDropdown>> _getWashCar() async {
     final _bearerToken = await _token.readToken();
     final response = await http.get(
-        'http://192.168.163.2:3000/app/getAllCar_wash',
+        'http://192.168.1.144:3000/app/getAllCar_wash',
         headers: {'Authorization': _bearerToken});
     final res = json.decode(response.body);
     final data = CarWashModel.fromJson(res);
@@ -172,7 +173,7 @@ class _BookingState extends State<BookingPage> {
     booking.cleanServiceDetailId = cleanServiceDetailId;
     var jsonRequest = bookingModelToJson(booking);
     final response = await http.post(
-        "http://192.168.163.2:3000/app/insertBooking",
+        "http://192.168.1.144:3000/app/insertBooking",
         body: jsonRequest,
         headers: {
           "Content-type": "application/json",
