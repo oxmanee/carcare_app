@@ -68,7 +68,7 @@ class _BookingState extends State<BookingPage> {
     final _bearerToken = await _token.readToken();
     final id = await _token.readId();
     final response = await http.get(
-        'http://192.168.1.144:3000/app/getDetailCarByMember/${id}',
+        'http://157.179.133.41:3000/app/getDetailCarByMember/${id}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarModel.fromJson(res);
@@ -101,7 +101,7 @@ class _BookingState extends State<BookingPage> {
     var _bearerToken = await _token.readToken();
     var typeCar = selectedCar.typeCar;
     final response = await http.get(
-        'http://192.168.1.144:3000/app/getCleanServiceByTypeCar/${typeCar}',
+        'http://157.179.133.41:3000/app/getCleanServiceByTypeCar/${typeCar}',
         headers: {HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
           'Authorization': _bearerToken});
 
@@ -138,7 +138,7 @@ class _BookingState extends State<BookingPage> {
   Future<List<CarWashDropdown>> _getWashCar() async {
     final _bearerToken = await _token.readToken();
     final response = await http.get(
-        'http://192.168.1.144:3000/app/getAllCar_wash',
+        'http://157.179.133.41:3000/app/getAllCar_wash',
         headers: {'Authorization': _bearerToken});
     final res = json.decode(response.body);
     final data = CarWashModel.fromJson(res);
@@ -172,8 +172,9 @@ class _BookingState extends State<BookingPage> {
     setState(() {});
     booking.cleanServiceDetailId = cleanServiceDetailId;
     var jsonRequest = bookingModelToJson(booking);
+    print(jsonRequest);
     final response = await http.post(
-        "http://192.168.1.144:3000/app/insertBooking",
+        "http://157.179.133.41:3000/app/insertBooking",
         body: jsonRequest,
         headers: {
           "Content-type": "application/json",
