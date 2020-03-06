@@ -68,7 +68,7 @@ class _BookingState extends State<BookingPage> {
     final _bearerToken = await _token.readToken();
     final id = await _token.readId();
     final response = await http.get(
-        'http://10.13.2.115:3000/app/getDetailCarByMember/${id}',
+        'http://10.13.3.39:3000/app/getDetailCarByMember/${id}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarModel.fromJson(res);
@@ -99,11 +99,12 @@ class _BookingState extends State<BookingPage> {
 
   Future<List<CleanServiceCheckBox>> _getCleanService() async {
     var _bearerToken = await _token.readToken();
-    var typeCar = selectedCar.getValue();
-    final response = await http.get(
-        'http://10.13.2.115:3000/app/getCleanServiceByTypeCar/${typeCar}',
-        headers: {'Authorization': _bearerToken});
 
+    var typeCar = selectedCar.typeCar;
+    final response = await http.get(
+        'http://10.13.3.39:3000/app/getCleanServiceByTypeCar/${typeCar}',
+        headers: {HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+          'Authorization': _bearerToken});
     final res = json.decode(response.body);
 
     final data = CleanServiceModel.fromJson(res);
@@ -137,7 +138,7 @@ class _BookingState extends State<BookingPage> {
   Future<List<CarWashDropdown>> _getWashCar() async {
     final _bearerToken = await _token.readToken();
     final response = await http.get(
-        'http://10.13.2.115:3000/app/getAllCar_wash',
+        'http://10.13.3.39:3000/app/getAllCar_wash',
         headers: {'Authorization': _bearerToken});
     final res = json.decode(response.body);
     final data = CarWashModel.fromJson(res);
@@ -172,7 +173,7 @@ class _BookingState extends State<BookingPage> {
     booking.cleanServiceDetailId = cleanServiceDetailId;
     var jsonRequest = bookingModelToJson(booking);
     final response = await http.post(
-        "http://10.13.2.115:3000/app/insertBooking",
+        "http://10.13.3.39:3000/app/insertBooking",
         body: jsonRequest,
         headers: {
           "Content-type": "application/json",
@@ -271,19 +272,20 @@ class _BookingState extends State<BookingPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                child: InkWell(
-                  onTap: () => debugPrint("home Page"),
-                  child: ListTile(
-                    title: Text("History Page"),
-                    leading: Icon(
-                      Icons.history,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                  ),
-                ),
-              ),
+//              Padding(
+//                padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+//                child: InkWell(
+//                  onTap: () => debugPrint("home Page"),
+//                  child: ListTile(
+//                    title: Text("History Page"),
+//                    leading: Icon(
+//                      Icons.history,
+//                      color: Colors.deepPurpleAccent,
+//                    ),
+//                  ),
+//                ),
+//              ),
+
               Container(
                 margin: EdgeInsets.only(left: 30, right: 30),
                 width: MediaQuery.of(context).size.width,

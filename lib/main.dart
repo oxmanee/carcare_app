@@ -2,9 +2,10 @@ import 'package:booking_carcare_app/pages/booking.dart';
 import 'package:booking_carcare_app/pages/history.dart';
 import 'package:booking_carcare_app/pages/home.dart';
 import 'package:booking_carcare_app/pages/login.dart';
-import 'package:booking_carcare_app/pages/profile_member.dart';
+import 'package:booking_carcare_app/pages/profile.dart';
 //import 'package:booking_carcare_app/pages/profile.dart';
 import 'package:booking_carcare_app/pages/regis.dart';
+import 'package:booking_carcare_app/pages/status.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilePage(),
         '/booking': (context) => BookingPage(),
-        '/history': (context) => HistoryPage()
+        '/history': (context) => HistoryPage(),
+        '/status': (context) => StatusPage()
       },
     );
   }

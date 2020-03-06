@@ -40,7 +40,7 @@ Future _getLogin(RegisModel payload) async {
   print(json.encode(jsonRequest));
 
   http.Response response = await http.post(
-      "http://10.13.2.115:3000/app/insertMemberApi",
+      "http://10.13.3.39:3000/app/insertMemberApi",
       body: json.encode(jsonRequest),
       headers: {
         'Content-type': 'application/json',
@@ -112,10 +112,8 @@ class _RegigState extends State<RegisPage> {
 
   Future<List<CarDropdown>> _getCar() async {
     var _token = manageToken();
-    var _bearerToken = await _token.readToken();
-    var id = await _token.readId();
     http.Response response = await http
-        .get('http://10.13.2.115:3000/app/getAllCar_detailJClean_serviceJModelJCarJType_carApi', headers: {
+        .get('http://10.13.3.39:3000/app/getAllCar_detailApi', headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
@@ -137,7 +135,7 @@ class _RegigState extends State<RegisPage> {
 
   Future<List<DropdownProvince>> _getProvince() async {
     final response = await http
-        .get("http://10.13.2.115:3000/app/getAllProvinceApi", headers: {
+        .get("http://10.13.3.39:3000/app/getAllProvinceApi", headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
@@ -186,7 +184,6 @@ class _RegigState extends State<RegisPage> {
 //
 //      print('Printing the login data.');
 //      print('usernmae: ${_data.username}');
-    print(formCarList.toString());
       var username = _data.username;
       var password = _data.password;
       var fname = _data.fname;
@@ -254,6 +251,8 @@ class _RegigState extends State<RegisPage> {
       //  print(i);
       if (status == 1) {
         formCarList.add(Car(null, null, null));
+        setState(() {
+        });
       }
 
       _addList = ListView.builder(

@@ -82,3 +82,4 @@ class manageToken {
     return value;
   }
 }
+

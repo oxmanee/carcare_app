@@ -60,7 +60,7 @@ class _ReserveState extends State<ReservePage> {
     var _bearerToken = await _token.readToken();
     var id = await _token.readId();
     http.Response response = await http.get(
-        'http://192.168.1.134:3000/app/getDetailCarByMember/${id}',
+        'http://10.13.3.39:3000/app/getDetailCarByMember/${id}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarModel.fromJson(res);
@@ -82,7 +82,7 @@ class _ReserveState extends State<ReservePage> {
     var _bearerToken = await _token.readToken();
     var typeCar = widget.data.typeCar;
     http.Response response = await http.get(
-        'http://192.168.1.134:3000/app/getCleanServiceByTypeCar/${typeCar}',
+        'http://10.13.3.39:3000/app/getCleanServiceByTypeCar/${typeCar}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CleanServiceModel.fromJson(res);
@@ -97,7 +97,7 @@ class _ReserveState extends State<ReservePage> {
     var _token = manageToken();
     var _bearerToken = await _token.readToken();
     http.Response response = await http.get(
-        'http://192.168.1.134:3000/app/getAllCar_wash',
+        'http://10.13.3.39:3000/app/getAllCar_wash',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarWashModel.fromJson(res);
@@ -107,22 +107,23 @@ class _ReserveState extends State<ReservePage> {
     }
     return carWashList;
   }
+
   var now = new DateTime.now();
+
   @override
   Widget build(BuildContext context) {
-
-    return new Scaffold(
-      appBar: new AppBar(title: new Text('จองคิวล้างรถ')),
-      body: new Center(
-        child: new Column(
+    return Scaffold(
+      appBar: AppBar(title: Text('จองคิวล้างรถ')),
+      body: Center(
+        child: Column(
           children: <Widget>[
-            new Container(
+            Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Text("เลือกรถที่ต้องกาาร"),
-                  new Container(
-                      child: new FutureBuilder(
+                  Container(
+                      child: FutureBuilder(
                           future: _getCar(),
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
@@ -136,32 +137,33 @@ class _ReserveState extends State<ReservePage> {
               ),
             ),
             widget.data != null
-                ? new Container(
-                    child: new FutureBuilder(
-                        future: _getCleanService(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return new Container(
-                                 height: 200,
-                                child: new ListView(
-                              padding: new EdgeInsets.symmetric(vertical: 2.0),
+                ? Container(
+                child: FutureBuilder(
+                    future: _getCleanService(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        return Container(
+                            height: 200,
+                            child: ListView(
+                              padding: EdgeInsets.symmetric(vertical: 2.0),
                               children: widget.checkBoxList.map((checkbox) {
-                                return CheckBoxCleanService(checkbox: checkbox);
+                                return CheckBoxCleanService(
+                                    checkbox: checkbox);
                               }).toList(),
                             ));
-                          } else {
-                            return Container();
-                          }
-                        }))
+                      } else {
+                        return Container();
+                      }
+                    }))
                 : Container(),
-            new Container(
+            Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Text("เลือกช่องล้างรถ"),
-                  new Container(
-                      child: new FutureBuilder(
+                  Container(
+                      child: FutureBuilder(
                           future: _getWashCar(),
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
@@ -175,29 +177,28 @@ class _ReserveState extends State<ReservePage> {
                 ],
               ),
             ),
-            new Container(
-                    child: TextFormField(
-                      // autofocus: true,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: now.toString(),
-                        labelStyle: TextStyle(
-                          color: Colors.purple,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 20,
-                        ),
-                      ),
-                      style: TextStyle(fontSize: 20, color: Colors.deepPurple),
-                    ),
+            Container(
+              child: TextFormField(
+                // autofocus: true,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: now.toString(),
+                  labelStyle: TextStyle(
+                    color: Colors.purple,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                  ),
+                ),
+                style: TextStyle(fontSize: 20, color: Colors.deepPurple),
+              ),
             ),
-            new Container(
-              child : Column(
-                children: <Widget>[
-                  //_queue()
-                ],
-              )
-            )
+            Container(
+                child: Column(
+                  children: <Widget>[
+                    //_queue()
+                  ],
+                ))
           ],
         ),
       ),

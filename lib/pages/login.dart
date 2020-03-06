@@ -64,7 +64,7 @@ Future getLogin(username, password) async {
   var jsonRequest = req.toJson();
 
   http.Response response = await http.post(
-      "http://10.13.2.115:3000/app/loginMember",
+      "http://10.13.3.39:3000/app/loginMember",
       body: jsonRequest,
       headers: {
         HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'

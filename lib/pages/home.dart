@@ -2,12 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:booking_carcare_app/helpers/manageToken.dart';
+import 'package:booking_carcare_app/models/QueueModel.dart';
 import 'package:booking_carcare_app/pages/login.dart';
+import 'package:booking_carcare_app/pages/status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'package:booking_carcare_app/models/promotionModel.dart';
+
+import 'history.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,7 +27,7 @@ class _HomeState extends State<HomePage> {
     var _bearerToken = await _token.readToken();
 //  print(_bearerToken);
     http.Response response = await http.get(
-        "http://10.13.2.115:3000/app/getAllPromotion",
+        "http://10.13.3.39:3000/app/getAllPromotion",
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = PromotionModel.fromJson(res);
@@ -34,6 +38,45 @@ class _HomeState extends State<HomePage> {
           : '';
     }
     return arr;
+  }
+
+  Future<List<DisplayQueue>> initQueue;
+  List<DisplayQueue> displayQueueList = new List<DisplayQueue>();
+
+  Future<List<DisplayQueue>> getQueue() async {
+    displayQueueList = new List<DisplayQueue>();
+    var _token = manageToken();
+    var _bearerToken = await _token.readToken();
+    var id = await _token.readId();
+    http.Response response = await http.get(
+        'http://10.13.3.39:3000/app/getQueueForMemberApi/${id}',
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+          'Authorization': _bearerToken
+        });
+    var res = json.decode(response.body);
+    var data = QueueModel.fromJson(res);
+    for (int i = 0; i < data.data.length; i++) {
+      displayQueueList.add(DisplayQueue(
+          data.data[i].queueId,
+          data.data[i].totalPrice,
+          data.data[i].startDate,
+          data.data[i].endDate,
+          data.data[i].reservStatus,
+          data.data[i].car,
+          data.data[i].carWashName));
+    }
+    return displayQueueList;
+  }
+
+  gotoStatus(reservStatus) {
+    print("status" + reservStatus.toString());
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => StatusPage(reservStatus: reservStatus)),
+    );
+//      Navigator.pushNamed(context, '/status' , arguments: ,);
   }
 
   @override
@@ -163,19 +206,19 @@ class _HomeState extends State<HomePage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                child: InkWell(
-                  onTap: () => Navigator.pushNamed(context, '/history'),
-                  child: ListTile(
-                    title: Text("History Page"),
-                    leading: Icon(
-                      Icons.history,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                  ),
-                ),
-              ),
+//              Padding(
+//                padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+//                child: InkWell(
+//                  onTap: () => Navigator.pushNamed(context, '/history'),
+//                  child: ListTile(
+//                    title: Text("History Page"),
+//                    leading: Icon(
+//                      Icons.history,
+//                      color: Colors.deepPurpleAccent,
+//                    ),
+//                  ),
+//                ),
+//              ),
               Container(
                 margin: EdgeInsets.only(left: 30, right: 30),
                 width: MediaQuery.of(context).size.width,
@@ -207,20 +250,71 @@ class _HomeState extends State<HomePage> {
             color: Color.fromRGBO(251, 245, 255, 1),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            child: litems.length > 0
-                ? ListView.builder(
-                    itemCount: litems.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.00),
-                          child: Text(litems[index].toString()),
-                        ),
-                      );
-                    })
-                : Center(
-                    child: Text('No data'),
-                  ),
+            child: FutureBuilder(
+                future: getQueue(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: displayQueueList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                gotoStatus(
+                                    displayQueueList[index].reservStatus);
+                              });
+                            },
+                            child: Card(
+                              child: Padding(
+                                  padding: EdgeInsets.all(16.00),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Text("CAR : "),
+                                          Text(displayQueueList[index].car)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("START : "),
+                                          Text(
+                                              displayQueueList[index].startDate)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("END : "),
+                                          Text(displayQueueList[index].endDate)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("TOTAL : "),
+                                          Text(displayQueueList[index]
+                                              .totalPrice
+                                              .toString())
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("CARWASH : "),
+                                          Text(displayQueueList[index]
+                                              .carWashName)
+                                        ],
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          );
+                        });
+                  } else {
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: Text('No data'),
+                    );
+                  }
+                }),
           ),
         ));
   }

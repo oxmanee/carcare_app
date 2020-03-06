@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:booking_carcare_app/helpers/manageToken.dart';
+import 'package:booking_carcare_app/models/QueueModel.dart';
+import 'package:booking_carcare_app/pages/status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -10,9 +16,55 @@ class HistoryPage extends StatefulWidget {
   }
 }
 
+class DisplayQueue {
+  const DisplayQueue(this.queueId,this.totalPrice,this.startDate,this.endDate,this.reservStatus,this.car,this.carWashName);
+
+  final int queueId;
+  final int totalPrice;
+  final String startDate;
+  final String endDate;
+  final int reservStatus;
+  final String car;
+  final String carWashName;
+}
+
 class _HistoryState extends State<HistoryPage> {
   int count = 0;
-  List<String> litems = ["1", "2", "Third", "4", "5", "asdlkas", "asdpoaskjd"];
+  List<DisplayQueue> displayQueueList = new List<DisplayQueue>();
+  Future<List<DisplayQueue>> initQueue;
+
+  Future<List<DisplayQueue>> getQueue() async {
+    var _token = manageToken();
+    var _bearerToken = await _token.readToken();
+    var id = await _token.readId();
+    http.Response response = await http
+        .get('http://10.13.3.39:3000/app/getQueueForMemberApi/${id}', headers: {
+      HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+      'Authorization': _bearerToken
+    });
+    var res = json.decode(response.body);
+    var data = QueueModel.fromJson(res);
+    for(int i=0;i<data.data.length;i++){
+      displayQueueList.add(DisplayQueue(data.data[i].queueId,data.data[i].totalPrice,data.data[i].startDate,data.data[i].endDate,data.data[i].reservStatus,data.data[i].car,data.data[i].carWashName));
+    }
+    return displayQueueList;
+  }
+
+  gotoStatus(reservStatus){
+    print("status"+reservStatus.toString());
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => StatusPage(reservStatus : reservStatus)),
+    );
+//      Navigator.pushNamed(context, '/status' , arguments: ,);
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initQueue = getQueue();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,20 +170,66 @@ class _HistoryState extends State<HistoryPage> {
           color: Color.fromRGBO(251, 245, 255, 1),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: litems.length > 0
-              ? ListView.builder(
-              itemCount: litems.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.00),
-                    child: Text(litems[index].toString()),
-                  ),
-                );
-              })
-              : Center(
-            child: Text('No data'),
-          ),
+          child: FutureBuilder(
+              future: initQueue,
+              builder: (BuildContext context,
+                  AsyncSnapshot snapshot){
+                if(snapshot.hasData){
+                  return ListView.builder(
+                      itemCount: displayQueueList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                gotoStatus(displayQueueList[index].reservStatus);
+                              });
+                            },
+                            child:  Card(
+                              child: Padding(
+                                  padding: EdgeInsets.all(16.00),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Text("CAR : "),
+                                          Text(displayQueueList[index].car)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("START : "),
+                                          Text(displayQueueList[index].startDate)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("END : "),
+                                          Text(displayQueueList[index].endDate)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("TOTAL : "),
+                                          Text(displayQueueList[index].totalPrice.toString())
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("CARWASH : "),
+                                          Text(displayQueueList[index].carWashName)
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                              ),
+                            ),
+                          );
+                      });
+                }else{
+                  return Text('No data');
+                }
+              }),
         ),
       ),
     );

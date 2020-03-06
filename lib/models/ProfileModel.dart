@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:booking_carcare_app/pages/profile_member.dart';
+import 'package:booking_carcare_app/pages/profile.dart';
 
 ProfileModel profileModelFromJson(String str) => ProfileModel.fromJson(json.decode(str));
 
