@@ -52,11 +52,13 @@ class _BookingState extends State<BookingPage> {
   int count = 0;
   final _token = manageToken();
   String _time;
+  String _date;
 
   // ========= use for dropdown car ===========
   Future<List<Item>> _drpCar;
 
   TextEditingController _controllerTime;
+  TextEditingController _controllerDate;
 
   void initState() {
     super.initState();
@@ -68,7 +70,7 @@ class _BookingState extends State<BookingPage> {
     final _bearerToken = await _token.readToken();
     final id = await _token.readId();
     final response = await http.get(
-        'http://10.13.3.39:3000/app/getDetailCarByMember/${id}',
+        'http://192.168.163.2:3000/app/getDetailCarByMember/${id}',
         headers: {'Authorization': _bearerToken});
     var res = json.decode(response.body);
     var data = CarModel.fromJson(res);
@@ -102,9 +104,11 @@ class _BookingState extends State<BookingPage> {
 
     var typeCar = selectedCar.typeCar;
     final response = await http.get(
-        'http://10.13.3.39:3000/app/getCleanServiceByTypeCar/${typeCar}',
-        headers: {HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
-          'Authorization': _bearerToken});
+        'http://192.168.163.2:3000/app/getCleanServiceByTypeCar/${typeCar}',
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
+          'Authorization': _bearerToken
+        });
     final res = json.decode(response.body);
 
     final data = CleanServiceModel.fromJson(res);
@@ -138,7 +142,7 @@ class _BookingState extends State<BookingPage> {
   Future<List<CarWashDropdown>> _getWashCar() async {
     final _bearerToken = await _token.readToken();
     final response = await http.get(
-        'http://10.13.3.39:3000/app/getAllCar_wash',
+        'http://192.168.163.2:3000/app/getAllCar_wash',
         headers: {'Authorization': _bearerToken});
     final res = json.decode(response.body);
     final data = CarWashModel.fromJson(res);
@@ -161,6 +165,7 @@ class _BookingState extends State<BookingPage> {
     booking.memberId = int.parse(id);
     booking.carDetailId = selectedCar.value;
     booking.carWashId = selectedCarWash.value;
+    booking.queueDate = _date;
     var time_use = _time.split(' ')[0] + ":" + _time.split(' ')[2];
     booking.startTime = time_use;
     List<int> cleanServiceDetailId = List<int>();
@@ -173,7 +178,7 @@ class _BookingState extends State<BookingPage> {
     booking.cleanServiceDetailId = cleanServiceDetailId;
     var jsonRequest = bookingModelToJson(booking);
     final response = await http.post(
-        "http://10.13.3.39:3000/app/insertBooking",
+        "http://192.168.163.2:3000/app/insertBooking",
         body: jsonRequest,
         headers: {
           "Content-type": "application/json",
@@ -315,7 +320,7 @@ class _BookingState extends State<BookingPage> {
         body: Stack(
           children: <Widget>[
             Container(
-              height: MediaQuery.of(context).size.height / 2.8,
+              height: MediaQuery.of(context).size.height / 0.5,
               width: MediaQuery.of(context).size.width,
               child: Padding(
                 padding: EdgeInsets.only(top: 8, left: 20, right: 20),
@@ -432,6 +437,39 @@ class _BookingState extends State<BookingPage> {
                       margin: EdgeInsets.only(top: 25),
                       child: TextFormField(
                         readOnly: true,
+                        controller: _controllerDate,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          icon: Icon(
+                            Icons.date_range,
+                            size: 40.0,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          labelText: 'Input date',
+                        ),
+                        onTap: () {
+                          DatePicker.showDatePicker(context,
+                              theme: DatePickerTheme(
+                                containerHeight: 210.0,
+                              ),
+                              showTitleActions: true,
+                              minTime: DateTime.now(), onConfirm: (date) {
+                            _date = date.toString().split(" ")[0];
+                            _controllerDate =
+                                TextEditingController(text: _date);
+                            setState(() {});
+                          },
+                              currentTime: DateTime.now(),
+                              locale: LocaleType.th);
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: 300,
+                      margin: EdgeInsets.only(top: 25),
+                      child: TextFormField(
+                        readOnly: true,
                         controller: _controllerTime,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -466,7 +504,7 @@ class _BookingState extends State<BookingPage> {
             ),
             Container(
               margin: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height / 2.8),
+                  top: MediaQuery.of(context).size.height / 2.2),
               width: MediaQuery.of(context).size.width,
               child: Stack(
                 children: <Widget>[
@@ -497,7 +535,7 @@ class _BookingState extends State<BookingPage> {
                           top: BorderSide(width: 0.5, color: Colors.grey)),
                     ),
                     margin: EdgeInsets.only(top: 40),
-                    height: 300,
+                    height: 220,
                     width: MediaQuery.of(context).size.width,
                     child: checkBoxList.length != 0
                         ? ListView.builder(
@@ -538,7 +576,7 @@ class _BookingState extends State<BookingPage> {
                   ),
                   Container(
                       margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height / 2.3),
+                          top: MediaQuery.of(context).size.height / 3),
                       child: Padding(
                         padding: EdgeInsets.only(top: 10, left: 30, right: 30),
                         child: Row(
