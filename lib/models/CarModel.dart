@@ -39,14 +39,14 @@ class CarDetail {
       this.typeCarId});
 
   factory CarDetail.fromJson(Map<String, dynamic> json) => CarDetail(
-      carDetailId: json["car_detail_id"],
+      carDetailId: json["member_car_detail_id"],
       modelName: json["model_name"],
       brand: json["brand"],
       size: json["size"],
       typeCarId: json["type_car_id"]);
 
   Map<String, dynamic> toJson() => {
-        "car_detail_id": carDetailId,
+        "member_car_detail_id": carDetailId,
         "model_name": modelName,
         "brand": brand,
         "size": size,
