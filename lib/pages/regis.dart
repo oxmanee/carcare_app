@@ -3,7 +3,9 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:booking_carcare_app/helpers/manageToken.dart';
+import 'package:booking_carcare_app/models/CarAllModel.dart';
 import 'package:booking_carcare_app/models/CarModel.dart';
+import 'package:booking_carcare_app/models/DropDownCarModel.dart';
 import 'package:booking_carcare_app/models/ProvinceModel.dart';
 import 'package:booking_carcare_app/models/carRequest.dart';
 import 'package:booking_carcare_app/models/regisModel.dart';
@@ -40,7 +42,7 @@ Future _getLogin(RegisModel payload) async {
   print(json.encode(jsonRequest));
 
   http.Response response = await http.post(
-      "http://10.13.3.39:3000/app/insertMemberApi",
+      "http://169.254.143.3:3000/app/insertMemberApi",
       body: json.encode(jsonRequest),
       headers: {
         'Content-type': 'application/json',
@@ -97,45 +99,43 @@ class _RegigState extends State<RegisPage> {
   ListView _addList;
   Future<List<DropdownProvince>> _drp;
   RegisMember _data = RegisMember();
-  Car _dataCar;
-  Future<List<CarDropdown>> _carList;
   DropdownProvince selectedProvince;
   CarDropdown seletedCar;
   List<Car> formCarList = List<Car>();
+
+  List<DropDownCarModel> drpCarListAll = List<DropDownCarModel>();
 
   @override
   void initState() {
     super.initState();
     _drp = _getProvince();
-    _carList = _getCar();
   }
 
-  Future<List<CarDropdown>> _getCar() async {
-    var _token = manageToken();
+  Future<List<DropDownCarModel>> _getCar(index) async {
     http.Response response = await http
-        .get('http://10.13.3.39:3000/app/getAllCar_detailApi', headers: {
+        .get('http://169.254.143.3:3000/app/api/CarApi', headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
-    var data = CarModel.fromJson(res);
-    List<CarDropdown> carList = List<CarDropdown>();
+    var data = CarAllModel.fromJson(res);
+    List<CarDrp> carDrp = List<CarDrp>();
+
     for (int i = 0; i < data.data.length; i++) {
-      carList.add(CarDropdown(
-          data.data[i].carDetailId,
-          data.data[i].modelName +
-              " " +
-              data.data[i].brand +
-              " " +
-              data.data[i].size));
+      carDrp.add(CarDrp(
+          data.data[i].carId,
+          data.data[i].brand));
     }
+
+    drpCarListAll.add(DropDownCarModel(index,carDrp,null,null));
+
     setState(() {});
 
-    return carList;
+    return drpCarListAll;
   }
 
   Future<List<DropdownProvince>> _getProvince() async {
     final response = await http
-        .get("http://10.13.3.39:3000/app/getAllProvinceApi", headers: {
+        .get("http://169.254.143.3:3000/app/getAllProvinceApi", headers: {
       HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'
     });
     var res = json.decode(response.body);
@@ -175,15 +175,7 @@ class _RegigState extends State<RegisPage> {
   }
 
   Future<bool> submit() async {
-//    for(int i=0;i<formCarList.length;i++){
-//      print(formCarList[i].toString());
-//    }
-    // First validate form.
     if (this._formKey.currentState.validate()) {
-//      _formKey.currentState.save(); // Save our form now.
-//
-//      print('Printing the login data.');
-//      print('usernmae: ${_data.username}');
       var username = _data.username;
       var password = _data.password;
       var fname = _data.fname;
@@ -305,7 +297,7 @@ class _RegigState extends State<RegisPage> {
                                 margin: EdgeInsets.only(left: 40),
                                 alignment: Alignment.topLeft,
                                 child: FutureBuilder(
-                                    future: _carList,
+                                    future: _getCar(index),
                                     builder: (BuildContext context,
                                         AsyncSnapshot snapshot) {
                                       if (snapshot.hasData) {
@@ -624,21 +616,25 @@ class _RegigState extends State<RegisPage> {
     );
   }
 
-  Widget getDropdownCar(List<CarDropdown> dropdownList, index) {
+  Widget getDropdownCar(List<DropDownCarModel> dropdownList, index) {
+
+    List<CarDropdown> newData =  List<CarDropdown>();
+    for(int i = 0;i<dropdownList[index].car.length;i++){
+      newData.add(CarDropdown(dropdownList[index].car[i].carId,dropdownList[index].car[i].brand));
+    }
+
     var button = DropdownButton<CarDropdown>(
       hint: Text("Select item"),
       value: formCarList[index].car,
-//      isExpanded: true,
       onChanged: (CarDropdown Value) {
         setState(() {
           for (int i = 0; i < formCarList.length; i++) {
             formCarList[index].car = Value;
-//              formCarList[formCarList.length - 1].car = Value.value;
           }
           addCar(0);
         });
       },
-      items: dropdownList.map((CarDropdown val) {
+      items: newData.map((CarDropdown val) {
         return DropdownMenuItem<CarDropdown>(
             value: val,
             child: Row(
@@ -661,10 +657,10 @@ class _RegigState extends State<RegisPage> {
       value: formCarList[index].province,
       isDense: true,
       onChanged: (DropdownProvince Value) {
+        print(Value);
         setState(() {
           for (int i = 0; i < formCarList.length; i++) {
             formCarList[index].province = Value;
-//            formCarList[formCarList.length-1].province = Value.provinceId;
           }
           addCar(0);
         });
